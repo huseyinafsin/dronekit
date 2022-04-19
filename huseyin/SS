@@ -1,0 +1,31 @@
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+ GPS DURUMU GLOBAL RELATIVE LocationGlobalRelative:lat=37.1715698,lon=39.0016041,alt=10.593
+ GPS DURUMU GLOBAL LocationGlobal:lat=37.1715698,lon=39.0016041,alt=536.9
+ GPS DURUMU LOCAL LocationLocal:north=7.191804885864258,east=4.704683303833008,down=-10.593459129333496
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+ GPS DURUMU GLOBAL RELATIVE LocationGlobalRelative:lat=37.1726608,lon=39.0023262,alt=1.068
+ GPS DURUMU GLOBAL LocationGlobal:lat=37.1726608,lon=39.0023262,alt=1.06
+ GPS DURUMU LOCAL LocationLocal:north=None,east=None,down=None
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+ GPS DURUMU GLOBAL RELATIVE LocationGlobalRelative:lat=37.1725829,lon=39.0022745,alt=0.341
+ GPS DURUMU GLOBAL LocationGlobal:lat=37.1725829,lon=39.0022745,alt=0.34
+ GPS DURUMU LOCAL LocationLocal:north=None,east=None,down=None
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+ Type: 2
+ System status: STANDBY
+ GPS: GPSInfo:fix=3,num_sat=4
+ Alt: 1.068
+***********
+About Battery: Battery:voltage=14.89,current=0.09,level=99
+***********
+Waiting for vehicle to initialise...
+VehicleMode:STABILIZE
+Arming motor
+^Carm-stopped
+VehicleMode:STABILIZE
+disarming
+[pantheon@pantheon-hplaptop15bs0xx dronkit]$ sudo python test.py 
+Mode: VehicleMode:LAND
