@@ -11,9 +11,11 @@ from tomlkit import boolean
 vehicle=connect('/dev/ttyUSB0', baud=57600)
 vehicle.mode = VehicleMode("STABILIZE")
 print("Mode:",vehicle.mode)
+
 #--------------------------------------------------------->
 irtifa_degeri=1
 inis_degeri=0.4
+home = vehicle.location.global_relative_frame
 def set_velocity_body(vehicle, vx, vy, vz):
     msg = vehicle.message_factory.set_position_target_local_ned_encode(
     0,
@@ -43,8 +45,11 @@ def arm():
             if kontrol_degeri>=irtifa_degeri:
                 print("you are aTargetAltitude")
                 print("Havada bekliyorum")
-                time.sleep(5)
-                land()
+                vehicle.location.global_relative_frame.alt=irtifa_degeri
+                print(vehicle.airspeed)
+                vehicle.airspeed=10
+                temp_land()
+                vehicle.close()
                 
     except KeyboardInterrupt:
         print('arm-stopped')
@@ -52,11 +57,21 @@ def arm():
         print(vehicle.mode)
         vehicle.disarm()
         print("disarming")
-
+def goto_location(waypoint):
+    vehicle.simple_goto(waypoint)
+    time.sleep(2)
+    reached = 0
+    while(not reached):
+        time.sleep(1)
+        a = vehicle.velocity
+        if (abs(a[1])< 0.2 and abs(a[2])< 0.2 and abs(a[0])< 0.2):
+            reached = 1
+    print ("Waypoint reached!")
 def temp_land():
     print("Vehicle in LAND mode")
     vehicle.mode = VehicleMode("LAND")
     while not vehicle.location.global_relative_frame.alt==0:
+        print("alt:",vehicle.location.global_relative_frame.alt)
         if vehicle.location.global_relative_frame.alt < 2:
             set_velocity_body(vehicle,0,0,0.1)
         print ("Vehicle in AUTO mode")
@@ -89,16 +104,15 @@ def battery_check():
 def takeoff(aTargetAltitude):
     try:
         vehicle.mode = VehicleMode("GUIDED")
-        print(vehicle.mode)
+        print("mod:",vehicle.mode)
         vehicle.armed = True
         vehicle.simple_takeoff(aTargetAltitude)
-        time.sleep(5)
         while True:
                 print(vehicle.location.global_relative_frame.alt,"---->",aTargetAltitude * 0.95)
                 if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:
                     print("Reached target altitude")
                     if aTargetAltitude * 0.95>0:
-                        time.sleep(3)
+                        print(vehicle.groundspeed)
                         return aTargetAltitude
                 time.sleep(1)     
     except KeyboardInterrupt:
@@ -120,3 +134,4 @@ else:
     home = vehicle.location.global_relative_frame
     about_battery()  
     arm()
+    
