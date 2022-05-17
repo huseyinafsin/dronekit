@@ -107,22 +107,22 @@ def range_with_floats(start, stop, step):
         start += step
 def takeoff(aTargetAltitude):
     try:
-        vehicle.airspeed=0
-        vehicle.groundspeed=0
+        vehicle.airspeed=0.001
+        vehicle.groundspeed=0.001
         vehicle.mode = VehicleMode("GUIDED")
         print("mod:",vehicle.mode)
         vehicle.armed = True
         vehicle.simple_takeoff(aTargetAltitude)
-        vehicle.airspeed=0
-        vehicle.groundspeed=0
+        vehicle.airspeed=0.0001
+        vehicle.groundspeed=0.0001
         time.sleep(2)
         print("graoundspeed:",vehicle.groundspeed,"  airspeed:",vehicle.airspeed)
-        """for i in range_with_floats(0.08, 0.1, 0.01):
+        for i in range_with_floats(0.00, 0.1, 0.01):
             print(i)
-            vehicle.airspeed+=i
-            vehicle.groundspeed+=i
+            vehicle.airspeed-=i
+            vehicle.groundspeed-=i
             time.sleep(3)      
-            print("graoundspeed:",vehicle.groundspeed,"  airspeed:",vehicle.airspeed)"""
+            print("graoundspeed:",vehicle.groundspeed,"  airspeed:",vehicle.airspeed)
         
         while True:
                 print(vehicle.location.global_relative_frame.alt,"---->",aTargetAltitude * 0.95)
