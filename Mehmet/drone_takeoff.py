@@ -3,7 +3,8 @@
 from __future__ import print_function
 from multiprocessing.connection import wait
 from nis import cat
-
+import requests
+import json
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 from pymavlink import mavutil # Needed for command message definitions
 import time
@@ -25,11 +26,13 @@ if not connection_string:
 
 print('Connecting to vehicle on: %s' % connection_string)
 vehicle = connect(connection_string, wait_ready=True,baud=57600)
+#vehicle=connect('/dev/ttyUSB0', baud=57600)
 
 
 def arm_and_takeoff(aTargetAltitude):
     print("Basic pre-arm checks")
     while not vehicle.is_armable:
+        vehicle.arm()
         print(" Waiting for vehicle to initialise...")
         time.sleep(1)
 
@@ -218,6 +221,22 @@ def battery_check():
         print("Battery is loww!!! go home")
     else:
         print ("Battery: %s" % vehicle.battery.level)
+        
+
+def sendJson(x,y,irtifa,hiz):
+
+    url = "http://192.168.1.100:9792/api/scan"
+    body = {"x":x, "y":y, "hiz":hiz}
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, headers=headers, data=body, verify=False)
+    print(response)
+    dictData = response.json()
+    print(dictData)
+
+    with open('scan.json', 'w') as fp:
+        json.dump(dictData, fp, indent=4, sort_keys=True)
+    
+    
 
 print (" Type: %s" % vehicle._vehicle_type)
 print (" System status: %s" % vehicle.system_status.state)
@@ -225,8 +244,6 @@ print (" GPS: %s" % vehicle.gps_0)
 print (" Alt: %s" % vehicle.location.global_relative_frame.alt)
 if vehicle.location.global_relative_frame.alt is None:
     print("GPS is None")
-elif vehicle.location.global_relative_frame.alt<0:
-    print("GPS<0")
 else:
     try: 
         home = vehicle.location.global_relative_frame
@@ -234,6 +251,7 @@ else:
         arm_and_takeoff(3)
         print("graoundspeed:",vehicle.groundspeed,"  airspeed:",vehicle.airspeed)
         vehicle.airspeed=10
+        print("graoundspeed:",vehicle.groundspeed,"  airspeed:",vehicle.airspeed)
         
     except KeyboardInterrupt:
         print("Setting RTL mode...")
@@ -256,7 +274,6 @@ print("Close vehicle object")
 vehicle.close()
 
 # Shut down simulator if it was started.
-if sitl is not None:
-    sitl.stop()
+
 
 print("Completed")

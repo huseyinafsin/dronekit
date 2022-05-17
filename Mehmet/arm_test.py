@@ -1,3 +1,4 @@
+from ast import For
 from tokenize import String
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative, Command
 from numpy import take
@@ -100,24 +101,40 @@ def battery_check():
         print("Battery is loww!!! go home")
     else:
         print ("Battery: %s" % vehicle.battery.level)
-
+def range_with_floats(start, stop, step):
+    while stop > start:
+        yield start
+        start += step
 def takeoff(aTargetAltitude):
     try:
+        vehicle.airspeed=0
+        vehicle.groundspeed=0
         vehicle.mode = VehicleMode("GUIDED")
         print("mod:",vehicle.mode)
         vehicle.armed = True
         vehicle.simple_takeoff(aTargetAltitude)
+        vehicle.airspeed=0
+        vehicle.groundspeed=0
+        time.sleep(2)
+        print("graoundspeed:",vehicle.groundspeed,"  airspeed:",vehicle.airspeed)
+        """for i in range_with_floats(0.08, 0.1, 0.01):
+            print(i)
+            vehicle.airspeed+=i
+            vehicle.groundspeed+=i
+            time.sleep(3)      
+            print("graoundspeed:",vehicle.groundspeed,"  airspeed:",vehicle.airspeed)"""
+        
         while True:
                 print(vehicle.location.global_relative_frame.alt,"---->",aTargetAltitude * 0.95)
                 if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:
                     print("Reached target altitude")
                     if aTargetAltitude * 0.95>0:
-                        print(vehicle.groundspeed)
+                        print("graoundspeed:",vehicle.groundspeed,"  airspeed:",vehicle.airspeed)
                         return aTargetAltitude
                 time.sleep(1)     
     except KeyboardInterrupt:
         print('takeoff-stopped')
-        vehicle.mode = VehicleMode("LAND")
+        vehicle.mode = VehicleMode("STABILIZE")
         print(vehicle.mode)
         vehicle.disarm()
 ############# POINTS ###############
@@ -128,8 +145,6 @@ print (" GPS: %s" % vehicle.gps_0)
 print (" Alt: %s" % vehicle.location.global_relative_frame.alt)
 if vehicle.location.global_relative_frame.alt is None:
     print("GPS is None")
-elif vehicle.location.global_relative_frame.alt<0:
-    print("GPS<0")
 else: 
     home = vehicle.location.global_relative_frame
     about_battery()  
